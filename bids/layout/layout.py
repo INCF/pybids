@@ -14,7 +14,7 @@ import difflib
 import sqlalchemy as sa
 from bids_validator import BIDSValidator
 
-from ..utils import listify, natural_sort
+from ..utils import listify, natural_sort, hashablefy
 from ..external import inflect
 from ..exceptions import (
     BIDSDerivativesValidationError,
@@ -677,7 +677,7 @@ class BIDSLayout(object):
             results = [x for x in results if target in x.entities]
 
             if return_type == 'id':
-                results = list(set([x.entities[target] for x in results]))
+                results = list(set([hashablefy(x.entities[target]) for x in results]))
                 results = natural_sort(results)
 
             elif return_type == 'dir':

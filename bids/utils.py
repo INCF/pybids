@@ -2,12 +2,27 @@
 
 import re
 import os
+from frozendict import frozendict
+
+
+# Monkeypatch to print out frozendicts *as if* they were dictionaries.
+frozendict.__repr__ = lambda s: repr({k: v for k, v in s.items()})
 
 
 def listify(obj):
     ''' Wraps all non-list or tuple objects in a list; provides a simple way
     to accept flexible arguments. '''
     return obj if isinstance(obj, (list, tuple, type(None))) else [obj]
+
+
+def hashablefy(obj):
+    ''' Make dictionaries and lists hashable or raise. '''
+    if isinstance(obj, list):
+        return tuple([hashablefy(o) for o in obj])
+
+    if isinstance(obj, dict):
+        return frozendict({k: hashablefy(v) for k, v in obj.items()})
+    return obj
 
 
 def matches_entities(obj, entities, strict=False):
