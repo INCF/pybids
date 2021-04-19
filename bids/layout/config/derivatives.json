@@ -49,5 +49,22 @@
             "name": "subset",
             "pattern": "subset-([a-zA-Z0-9]+)"
         }
+    ],
+
+    "default_path_patterns": [
+        "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_space-{space}][_desc-{desc}]_{suffix<T1w|T2w|T1rho|T1map|T2map|T2star|FLAIR|FLASH|PDmap|PD|PDT2|inplaneT[12]|angio>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_mod-{modality}][_space-{space}][_desc-{desc}]_{suffix<defacemask>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<func>|func}/sub-{subject}[_ses-{session}]_task-{task}[_acq-{acquisition}][_ce-{ceagent}][_dir-{direction}][_rec-{reconstruction}][_run-{run}][_echo-{echo}][_space-{space}][_desc-{desc}]_{suffix<bold|cbv|phase|sbref>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<dwi>|dwi}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_space-{space}][_desc-{desc}]_{suffix<dwi>}.{extension<bval|bvec|json|nii.gz|nii>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<fmap>|fmap}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_dir-{direction}][_run-{run}][_space-{space}][_desc-{desc}]_{fmap<phasediff|magnitude[12]|phase[12]|fieldmap>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<fmap>|fmap}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}]_dir-{direction}[_run-{run}][_space-{space}][_desc-{desc}]_{fmap<epi>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/[{datatype<func|meg|beh>|func}/]sub-{subject}[_ses-{session}]_task-{task}[_acq-{acquisition}][_rec-{reconstruction}][_run-{run}][_echo-{echo}][_recording-{recording}][_desc-{desc}]_{suffix<events>}.{extension<tsv|json>|tsv}",
+        "[acq-{acquisition}_][ce-{ceagent}_][rec-{reconstruction}_]{suffix<T1w|T2w|T1rho|T1map|T2map|T2star|FLAIR|FLASH|PDmap|PD|PDT2|inplaneT[12]|angio>}.{extension<json>|json}",
+        "[acq-{acquisition}_][ce-{ceagent}_][rec-{reconstruction}_][mod-{modality}_][space-{space}_][desc-{desc}_]{suffix<defacemask>}.{extension<json>|json}",
+        "task-{task}[_acq-{acquisition}][_ce-{ceagent}][_dir-{direction}][_rec-{reconstruction}][_run-{run}][_echo-{echo}][_space-{space}][_desc-{desc}]_{suffix<bold|cbv|phase|sbref>}.{extension<json>|json}",
+        "[acq-{acquisition}_][space-{space}_][desc-{desc}_]{suffix<dwi>}.{extension<json>|json}",
+        "[acq-{acquisition}_][dir-{direction}_][run-{run}_][space-{space}_][desc-{desc}_]{fmap<phasediff|magnitude[1-2]|phase[1-2]|fieldmap>}.{extension<json>|json}",
+        "[acq-{acquisition}_][ce-{ceagent}_]dir-{direction}[_run-{run}][_space-{space}][_desc-{desc}]_{fmap<epi>}.{extension<json>|json}",
+        "task-{task}[_acq-{acquisition}][_rec-{reconstruction}][_run-{run}][_echo-{echo}][_recording-{recording}][_desc-{desc}]_{suffix<events>}.{extension<json>|json}"
     ]
 }
