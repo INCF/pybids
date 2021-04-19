@@ -17,8 +17,8 @@ MANDATORY_BIDS_FIELDS = {
 
 MANDATORY_DERIVATIVES_FIELDS = {
     **MANDATORY_BIDS_FIELDS,
-    "PipelineDescription.Name": {
-        "PipelineDescription": {"Name": "Example pipeline"}
+    "GeneratedBy": {
+        "GeneratedBy": [{"Name": "Example pipeline"}]
     },
 }
 
@@ -144,8 +144,9 @@ def validate_derivative_paths(paths, layout=None, **kwargs):
         dd = os.path.join(deriv, 'dataset_description.json')
         with open(dd, 'r', encoding='utf-8') as ddfd:
             description = json.load(ddfd)
-        pipeline_name = description.get(
-            'PipelineDescription', {}).get('Name')
+        pipeline_names = [pipeline.get('Name')
+                          for pipeline in description.get('GeneratedBy')]
+        pipeline_name = pipeline_names[0]
         if pipeline_name is None:
             raise BIDSDerivativesValidationError(
                                 "Every valid BIDS-derivatives dataset must "
