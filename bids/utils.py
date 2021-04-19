@@ -113,6 +113,47 @@ def make_bidsfile(filename):
     return Cls(filename)
 
 
+def collect_associated_files(layout, files, extra_entities=()):
+    """Collect and group BIDSFiles with multiple files per acquisition.
+
+    Parameters
+    ----------
+    layout
+    files : list of BIDSFile
+    extra_entities
+
+    Returns
+    -------
+    collected_files : list of list of BIDSFile
+    """
+    MULTICONTRAST_ENTITIES = ['echo', 'part', 'ch', 'direction']
+    MULTICONTRAST_SUFFIXES = [
+        ('bold', 'phase'),
+        ('phase1', 'phase2', 'phasediff', 'magnitude1', 'magnitude2'),
+    ]
+    if len(extra_entities):
+        MULTICONTRAST_ENTITIES += extra_entities
+
+    collected_files = []
+    for f in files:
+        if len(collected_files) and any(f in filegroup for filegroup in collected_files):
+            continue
+        ents = f.get_entities()
+        ents = {k: v for k, v in ents.items() if k not in MULTICONTRAST_ENTITIES}
+
+        # Group files with differing multi-contrast entity values, but same
+        # everything else.
+        all_suffixes = ents['suffix']
+        for mcs in MULTICONTRAST_SUFFIXES:
+            if ents['suffix'] in mcs:
+                all_suffixes = mcs
+                break
+        ents.pop('suffix')
+        associated_files = layout.get(suffix=all_suffixes, **ents)
+        collected_files.append(associated_files)
+    return collected_files
+
+
 def validate_multiple(val, retval=None):
     """Any click.Option with the multiple flag will return an empty tuple if not set.
 

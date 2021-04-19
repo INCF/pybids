@@ -50,6 +50,8 @@ API Reference
    :toctree: generated/
 
    bids.reports.BIDSReport
+   bids.reports.parsing
+   bids.reports.parameters
    bids.reports.utils
 
 .. currentmodule:: bids
