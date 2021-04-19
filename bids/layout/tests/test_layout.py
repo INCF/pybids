@@ -478,6 +478,27 @@ def test_get_tr(layout_7t_trt):
     assert tr == 4.0
 
 
+def test_get_nonhashable_metadata(layout_ds117):
+    """Test nonhashable metadata values (#683)."""
+    assert layout_ds117.get_IntendedFor(subject=['01'])[0] == (
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-01_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-02_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-03_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-04_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-05_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-06_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-07_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-08_bold.nii.gz",
+       "ses-mri/func/sub-01_ses-mri_task-facerecognition_run-09_bold.nii.gz",
+    )
+
+    landmarks = layout_ds117.get_AnatomicalLandmarkCoordinates(subject=['01'])[0]
+    assert landmarks["Nasion"] == (43, 111, 95)
+    assert landmarks["LPA"] == (140, 74, 16)
+    assert landmarks["RPA"] == (143, 74, 173)
+
+
+
 def test_to_df(layout_ds117):
     # Only filename entities
     df = layout_ds117.to_df()
