@@ -96,10 +96,11 @@
     ],
 
     "default_path_patterns": [
-        "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}]_{suffix<T1w|T2w|T1rho|T1map|T2map|T2star|FLAIR|FLASH|PDmap|PD|PDT2|inplaneT[12]|angio>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_part-{part}]_{suffix<T1w|T2w|T1rho|T1map|T2map|T2star|FLAIR|FLASH|PDmap|PD|PDT2|inplaneT[12]|angio>}.{extension<nii|nii.gz|json>|nii.gz}",
         "sub-{subject}[/ses-{session}]/{datatype<anat>|anat}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}][_rec-{reconstruction}][_mod-{modality}]_{suffix<defacemask>}.{extension<nii|nii.gz|json>|nii.gz}",
-        "sub-{subject}[/ses-{session}]/{datatype<func>|func}/sub-{subject}[_ses-{session}]_task-{task}[_acq-{acquisition}][_ce-{ceagent}][_dir-{direction}][_rec-{reconstruction}][_run-{run}][_echo-{echo}]_{suffix<bold|cbv|phase|sbref>}.{extension<nii|nii.gz|json>|nii.gz}",
-        "sub-{subject}[/ses-{session}]/{datatype<dwi>|dwi}/sub-{subject}[_ses-{session}][_acq-{acquisition}]_{suffix<dwi>}.{extension<bval|bvec|json|nii.gz|nii>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<func>|func}/sub-{subject}[_ses-{session}]_task-{task}[_acq-{acquisition}][_ce-{ceagent}][_dir-{direction}][_rec-{reconstruction}][_run-{run}][_echo-{echo}][_part-{part}]_{suffix<bold|cbv|sbref>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<func>|func}/sub-{subject}[_ses-{session}]_task-{task}[_acq-{acquisition}][_ce-{ceagent}][_dir-{direction}][_rec-{reconstruction}][_run-{run}][_echo-{echo}]_{suffix<phase>}.{extension<nii|nii.gz|json>|nii.gz}",
+        "sub-{subject}[/ses-{session}]/{datatype<dwi>|dwi}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_part-{part}]_{suffix<dwi>}.{extension<.bval|.bvec|json|nii.gz|nii>|nii.gz}",
         "sub-{subject}[/ses-{session}]/{datatype<fmap>|fmap}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_dir-{direction}][_run-{run}]_{fmap<phasediff|magnitude[12]|phase[12]|fieldmap>}.{extension<nii|nii.gz|json>|nii.gz}",
         "sub-{subject}[/ses-{session}]/{datatype<fmap>|fmap}/sub-{subject}[_ses-{session}][_acq-{acquisition}][_ce-{ceagent}]_dir-{direction}[_run-{run}]_{fmap<epi>}.{extension<nii|nii.gz|json>|nii.gz}",
         "sub-{subject}[/ses-{session}]/[{datatype<func|meg|beh>|func}/]sub-{subject}[_ses-{session}]_task-{task}[_acq-{acquisition}][_rec-{reconstruction}][_run-{run}][_echo-{echo}][_recording-{recording}]_{suffix<events>}.{extension<tsv|json>|tsv}",
