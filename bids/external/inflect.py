@@ -1802,7 +1802,7 @@ A_abbrev = r"""
 [FHLMNRSX][A-Z]
 """
 
-# THIS PATTERN CODES THE BEGINNINGS OF ALL ENGLISH WORDS BEGINING WITH A
+# THIS PATTERN CODES THE BEGINNINGS OF ALL ENGLISH WORDS BEGINNING WITH A
 # 'y' FOLLOWED BY A CONSONANT. ANY OTHER Y-CONSONANT PREFIX THEREFORE
 # IMPLIES AN ABBREVIATION.
 
@@ -1985,7 +1985,7 @@ class engine:
 
     def defa(self, pattern):
         """
-        Define the indefinate article as 'a' for words matching pattern.
+        Define the indefinite article as 'a' for words matching pattern.
 
         """
         self.checkpat(pattern)
@@ -1994,7 +1994,7 @@ class engine:
 
     def defan(self, pattern):
         """
-        Define the indefinate article as 'an' for words matching pattern.
+        Define the indefinite article as 'an' for words matching pattern.
 
         """
         self.checkpat(pattern)
@@ -2046,7 +2046,7 @@ class engine:
 
         By default all classical modes are off except names.
 
-        unknown value in args or key in kwargs rasies
+        unknown value in args or key in kwargs raises
         exception: UnknownClasicalModeError
 
         """
@@ -3724,7 +3724,7 @@ class engine:
         if finalpoint:
             numchunks.append(decimal)
 
-        # wantlist: Perl list context. can explictly specify in Python
+        # wantlist: Perl list context. can explicitly specify in Python
         if wantlist:
             if sign:
                 numchunks = [sign] + numchunks

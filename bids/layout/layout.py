@@ -295,7 +295,7 @@ class BIDSLayout(object):
 
     @classmethod
     def load(cls, database_path):
-        """ Load index from database path. Initalization parameters are set to
+        """ Load index from database path. Initialization parameters are set to
         those found in database_path JSON sidecar.
 
         Parameters

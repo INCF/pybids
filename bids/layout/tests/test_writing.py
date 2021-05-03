@@ -170,7 +170,7 @@ sub-{subject}[/ses-{session}]/anat/sub-{subject}[_ses-{session}][_acq-{acquisiti
         assert build_path({'session': 'B', 'run': 3, 'extension': '.nii'},
                           pats) == 'ses-B/r-3.nii'
 
-        # Test default-only patterns are correctly overriden by setting entity
+        # Test default-only patterns are correctly overridden by setting entity
         entities = {
             'subject': '01',
             'extension': 'bvec',

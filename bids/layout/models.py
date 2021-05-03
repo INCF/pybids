@@ -55,7 +55,7 @@ class LayoutInfo(Base):
             setattr(self, col, json.loads(db_val))
 
     def _sanitize_init_args(self, kwargs):
-        """ Prepare initalization arguments for serialization """
+        """ Prepare initialization arguments for serialization """
         if 'root' in kwargs:
             kwargs['root'] = str(Path(kwargs['root']).absolute())
 

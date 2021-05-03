@@ -93,7 +93,7 @@ def load_variables(layout, types=None, levels=None, skip_empty=True,
         dataset = _load_time_variables(layout, dataset, scope=scope, **_kwargs)
 
     for t in ({'scans', 'sessions', 'participants'} & set(types)):
-        kwargs.pop('suffix', None) # suffix is always one of values aboves
+        kwargs.pop('suffix', None) # suffix is always one of values above
         dataset = _load_tsv_variables(layout, t, dataset, scope=scope,
                                       **kwargs)
 
@@ -499,7 +499,7 @@ def _load_tsv_variables(layout, suffix, dataset=None, columns=None,
 
         for col_name in amp_cols:
 
-            # Rename colummns: values must be in 'amplitude'
+            # Rename columns: values must be in 'amplitude'
             df = _data.loc[:, [col_name] + ent_cols]
             df.columns = ['amplitude'] + ent_cols
 

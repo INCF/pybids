@@ -1,5 +1,5 @@
 """
-This module is for hemodynamic reponse function (hrf) specification.
+This module is for hemodynamic response function (hrf) specification.
 Here we provide for SPM, Glover hrfs and finite timpulse response (FIR) models.
 This module closely follows SPM implementation
 
@@ -417,7 +417,7 @@ def compute_regressor(exp_condition, hrf_model, frame_times, con_id='cond',
     oversampling : int, optional
         oversampling factor to perform the convolution
     fir_delays : 1D-array-like, optional
-        delays (in seconds) used in case of a finite impulse reponse model
+        delays (in seconds) used in case of a finite impulse response model
     min_onset : float, optional
         minimal onset relative to frame_times[0] (in seconds)
         events that start before frame_times[0] + min_onset are not considered
