@@ -2,24 +2,36 @@ from abc import ABCMeta, abstractmethod
 
 import pandas as pd
 import numpy as np
+from formulaic import model_matrix
 
-from bids.variables import BIDSRunVariableCollection
 from bids.utils import convert_JSON
 
 
-def create_model_spec(collection, model):
+def create_model_spec(df, model, *args, **kwargs):
+    """Create and return a instance of the appropriate ModelSpec subclass.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A pandas DataFrame containing predictor data
+    model : dict
+        Dictionary containing the BIDS-StatsModels model information
+    args, kwargs:
+        Optional positional and keyword arguments to pass onto to subclass
+        initializer.
+    """
     kind = model.get('type', 'glm').lower()
     SpecCls = {
         'glm': GLMMSpec
     }[kind]
-    return SpecCls.from_collection(collection, model)
+    return SpecCls.from_df(df, model, *args, **kwargs)
 
 
 class ModelSpec(metaclass=ABCMeta):
     """Base class for all ModelSpec classes."""
     @abstractmethod
-    def from_collection(self, collection, model):
-        """Initialize from a BIDSVariableCollection instance."""
+    def from_df(self, df, model, metadata=None):
+        """Initialize from a pandas DataFrame."""
         pass
 
 
@@ -45,10 +57,9 @@ s
         v variance components. If Z is passed and groups is None, it is assumed
         that all columns in Z share the same single variance.
     sigma: NDArray
-        A 2d array giving the covariance matrix for the variance components
-        defined in the groups argument. Has dimension v x v, where v is the
-        number of columns in groups. If None (default), no constraint is
-        imposed and the covariance is directly estimated.
+        An optional 2d array giving the covariance matrix for the variance
+        components defined in the groups argument. Has dimension v x v, where v
+        is the number of columns in groups.
     family: str
         The name of the family to use for the error distribution. By default,
         gaussian.
@@ -77,7 +88,7 @@ s
             self.build_variance_components(Z, groups, sigma)
 
     def set_priors(self, fixed=None, random=None):
-        pass
+        raise NotImplementedError("Custom prior use hasn't been implemented yet.")
 
     def build_fixed_terms(self, X):
         """Build one or more fixed terms from the columns of a pandas DF.
@@ -109,9 +120,14 @@ s
                 where k is the number of distinct variance components. If None,
                 a single group over all columns of Z is assumed.
             sigma (2DArray): A k x k 2D covariance matrix specifying the
-                covariances between variance components.
+                covariances between variance components. Currently unused.
             names (list): Optional list specifying the names of the groups. 
         """
+
+        if sigma is not None:
+            raise NotImplementedError("Covariance specification is currently"
+                                      " not supported.")
+
         if groups is None:
             groups = np.ones((Z.shape[1], 1))
         n_grps = groups.shape[1]
@@ -150,7 +166,7 @@ s
             return None
         names, cols = zip(*[(c.name, c.values) for c in self.fixed_terms])
         return pd.DataFrame(np.c_[cols], columns=names)
-
+        
     @property
     def Z(self):
         """Return Z design matrix (i.e., random effects/variance components).
@@ -175,50 +191,66 @@ s
         return [t for t in self.terms.values() if isinstance(t, VarComp)]
 
     @classmethod
-    def from_collection(cls, collection, model):
+    def from_df(cls, df, model, metadata=None, formula=None):
         """ Initialize a GLMMSpec instance from a BIDSVariableCollection and
         a BIDS-StatsModels JSON spec.
 
         Parameters
         ----------
-        collection : BIDSVariableCollection
-            A BIDSVariableCollection containing variable information.
+        df : DataFrame
+            A pandas DataFrame containing predictor information (i.e., the
+            fixed component of the design matrix).
         model : dict
             The "Model" section from a BIDS-StatsModel specification.
+        metadata: DataFrame
+            Optional DataFrame containing additional columns that are not part
+            of the design matrix but may have downstream informational use
+            and/or contain variables needed to define random effects. Rows must
+            map 1-to-1 with those in `df`.
+        formula: str
+            Optional Wilkinson (R-style) formula specifying the fixed (X) part
+            of the design matrix. All variables referenced in the formula must
+            be present as columns in `df`. Output names will follow the
+            conventions specified in the `formulaic` documentation. Note that
+            only the right-hand part of the formula should be passed (i.e.,
+            pass "X1 * X2", not "y ~ X1 * X2"). If provided, willl take
+            precedence over any formula found in the `model`.
 
         Returns
         -------
         A GLMMSpec instance.
         """
-        if isinstance(collection, BIDSRunVariableCollection):
-            if not collection.all_dense():
-                raise ValueError("Input BIDSRunVariableCollection contains at "
-                                 "least one sparse variable. All variables must"
-                                 " be dense!")
 
         kwargs = {}
 
         # Fixed terms
         model = convert_JSON(model)
-        names = model.get('x', [])
-        if names:
-            names = collection.match_variables(names)
-            X = collection.to_df(names).loc[:, names]
-            kwargs['X'] = X
+
+        formula = formula or model.get('formula')
+        if formula is not None:
+            df = model_matrix(formula, df)
+
+        kwargs['X'] = df
 
         # Variance components
         vcs = model.get('variance_components', [])
         Z_list = []
+
         if vcs:
+
+            # VCs can be defined by variables in either the fixed predictor
+            # DF or the supplementary metadata DF, so concatenate them.
+            all_vars = [df, metadata] if metadata is not None else [df]
+            all_vars = pd.concat(all_vars, axis=1)
+
             for vc in vcs:
                 # Levels can either be defined by the levels of a single
                 # categorical ("LevelsFrom") or by a set of binary variables.
                 if 'levels_from' in vc:
-                    data = collection.variables[vc['levels_from']].values
+                    data = all_vars[vc['levels_from']].values
                     Z_list.append(pd.get_dummies(data).values)
                 else:
-                    names = collection.match_variables(vc['levels'])
-                    df = collection.to_df(names).loc[:, names]
+                    df = all_vars.loc[:, vc['levels']]
                     Z_list.append(df.values)
 
             Z = np.concatenate(Z_list, axis=1)

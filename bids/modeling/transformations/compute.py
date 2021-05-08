@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from bids.utils import listify
 from .base import Transformation
-from bids.analysis import hrf
+from bids.modeling import hrf
 from bids.variables import SparseRunVariable,  DenseRunVariable
 
 

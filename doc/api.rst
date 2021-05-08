@@ -27,16 +27,16 @@ API Reference
 .. _calibration_ref:
 
 
-:mod:`bids.analysis`: Model specification for BIDS datasets
+:mod:`bids.modeling`: Model specification for BIDS datasets
 ------------------------------------------------------------
 
-.. autosummary:: bids.analysis
+.. autosummary:: bids.modeling
    :toctree: generated/
 
-   bids.analysis.Analysis
-   bids.analysis.auto_model
-   bids.analysis.analysis.Step
-   bids.analysis.analysis.AnalysisNode
+   bids.modeling.statsmodels
+   bids.modeling.auto_model
+   bids.modeling.statsmodels.Step
+   bids.modeling.statsmodels.BIDSStatsModelsGraphNode
 
 .. currentmodule:: bids
 

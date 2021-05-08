@@ -1,118 +1,119 @@
 {
-  "Name": "test_model",
-  "Description": "simple test model",
-  "Steps": [
-    {
-      "Name": "run",
-      "Level": "Run",
-      "Model": {
-        "X": [
-          "RT",
-          "trial_type"
-        ]
-      },
-      "Transformations": [
+    "Name": "test_model",
+    "Description": "simple test model",
+    "Nodes": [
         {
-          "Name": "Scale",
-          "Input": "RT"
-        }
-      ],
-      "DummyContrasts": {
-        "Conditions": [
-          "RT"
-        ],
-        "Type": "t"
-      },
-      "Contrasts": [
-        {
-          "Name": "RT-trial_type",
-          "ConditionList": [
-            "RT",
-            "trial_type"
-          ],
-          "Weights": [
-            1,
-            -1
-          ]
-        },
-        {
-          "Name": "crummy-F",
-          "ConditionList": [
-            "RT",
-            "trial_type"
-          ],
-          "Weights": [
-            [
-              1,
-              0
+            "Name": "run",
+            "Level": "Run",
+            "Groupby": [
+                "run",
+                "subject"
             ],
-            [
-              0,
-              1
-            ]
-          ]
-        }
-      ]
-    },
-    {
-      "Name": "session",
-      "Level": "Session",
-      "DummyContrasts": {
-        "Type": "FEMA"
-      }
-    },
-    {
-      "Name": "participant",
-      "Level": "Subject",
-      "Contrasts": [
-        {
-          "Name": "RT",
-          "ConditionList": [
-            "RT"
-          ],
-          "Type": "FEMA",
-          "Weights": [
-            1
-          ]
+            "Model": {
+                "X": [
+                    "RT",
+                    "gain"
+                ],
+                "Formula": "0 + RT * gain"
+            },
+            "Transformations": [
+                {
+                    "Name": "Factor",
+                    "Input": "trial_type"
+                },
+                {
+                    "Name": "Rename",
+                    "Input": "trial_type.parametric gain",
+                    "Output": "gain"
+                },
+                {
+                    "Name": "Scale",
+                    "Input": "RT"
+                }
+            ],
+            "DummyContrasts": {
+                "Type": "t"
+            }
         },
         {
-          "Name": "RT-trial_type",
-          "ConditionList": [
-            "RT-trial_type"
-          ],
-          "Type": "FEMA",
-          "Weights": [
-            1
-          ]
+            "Name": "session",
+            "Level": "Session",
+            "Model": {
+                "X": [
+                    "Intercept"
+                ]
+            },
+            "DummyContrasts": {
+                "Type": "FEMA"
+            }
         },
         {
-          "Name": "crummy-F",
-          "ConditionList": [
-            "crummy-F"
-          ],
-          "Type": "FEMA",
-          "Weights": [
-            [
-              1
-            ]
-          ]
+            "Name": "participant",
+            "Level": "Subject",
+            "Model": {
+                "X": [
+                    "Intercept"
+                ]
+            },
+            "DummyContrasts": {
+                "Type": "t"
+            }
+        },
+        {
+            "Name": "by-group",
+            "Level": "Dataset",
+            "Model": {
+                "X": [
+                    "Intercept"
+                ]
+            },
+            "DummyContrasts": {
+                "Type": "t"
+            }
+        },
+        {
+            "Name": "group-diff",
+            "Level": "Dataset",
+            "Model": {
+                "X": [
+                    "Intercept",
+                    "sex"
+                ]
+            },
+            "DummyContrasts": {
+                "Type": "t"
+            }
         }
-      ]
-    },
-    {
-      "Name": "group",
-      "Level": "Dataset",
-      "Model": {
-        "X": [
-          "age",
-          "RT",
-          "RT-trial_type",
-          "crummy-F"
-        ]
-      },
-      "DummyContrasts": {
-        "Type": "t"
-      }
-    }
-  ]
+    ],
+    "Edges": [
+        {
+            "Src": "run",
+            "Dst": "session",
+            "Groupby": [
+                "subject",
+                "session",
+                "contrast"
+            ]
+        },
+        {
+            "Src": "session",
+            "Dst": "participant",
+            "Groupby": [
+                "subject",
+                "contrast"
+            ]
+        },
+        {
+            "Src": "participant",
+            "Dst": "by-group",
+            "Groupby": [
+                "sex"
+            ]
+        },
+        {
+            "Src": "participant",
+            "Dst": "group-diff",
+            "Groupby": []
+        }
+    ]
 }

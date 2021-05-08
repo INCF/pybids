@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 
 from bids.variables import BIDSVariableCollection
-from bids.analysis.model_spec import (GLMMSpec, Term, VarComp)
-from bids.analysis import TransformerManager
+from bids.modeling.model_spec import (GLMMSpec, Term, VarComp)
+from bids.modeling import TransformerManager
 from bids.layout import BIDSLayout
 from bids.tests import get_test_data_path
 
@@ -20,17 +20,17 @@ def collection():
         'run': np.tile(np.arange(4), 10),
         'age': np.repeat(np.random.normal(40, 10, 10).astype(int), 4)
     })
-    entities = df[['subject', 'run']]
-    return BIDSVariableCollection.from_df(df, entities=entities)
+    return BIDSVariableCollection.from_df(df[['age']], entities=df[['subject', 'run']])
 
 
-def test_bids_variable_collection_to_model_design(collection):
+def test_df_to_model_spec(collection):
     layout_path = join(get_test_data_path(), 'ds005')
     json_file = join(layout_path, 'models', 'ds-005_type-mfx_model.json')
     spec = json.load(open(json_file, 'r'))
-    tm = TransformerManager()
-    collection = tm.transform(collection, spec['Steps'][1]['Transformations'])
-    md = GLMMSpec.from_collection(collection, spec['Steps'][1]['Model'])
+    df = collection.to_df()
+    data = df[['age']]
+    metadata = df[['subject', 'run']]
+    md = GLMMSpec.from_df(data, spec['Nodes'][1]['Model'], metadata)
 
     assert len(md.terms) == 2
     assert md.terms['age'].values.shape == (40, )

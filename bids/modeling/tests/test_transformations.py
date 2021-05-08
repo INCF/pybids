@@ -1,5 +1,5 @@
-# from bids.analysis.variables import load_variables
-from bids.analysis import transformations as transform
+# from bids.modeling.variables import load_variables
+from bids.modeling import transformations as transform
 from bids.variables import SparseRunVariable
 from bids.variables.entities import RunInfo
 from bids.variables.collections import BIDSRunVariableCollection
@@ -77,29 +77,29 @@ def test_convolve(collection):
     # To resolve 1Hz frequencies, we must sample at >=2Hz
     args = (mock.ANY, 'spm', mock.ANY)
     kwargs = dict(fir_delays=None, min_onset=0)
-    with mock.patch('bids.analysis.transformations.compute.hrf') as mocked:
+    with mock.patch('bids.modeling.transformations.compute.hrf') as mocked:
         # Sampling rate is 10Hz, no oversampling needed
         transform.Convolve(collection, 'RT', output='rt_mock')
         mocked.compute_regressor.assert_called_with(*args, oversampling=1.0, **kwargs)
 
-    with mock.patch('bids.analysis.transformations.compute.hrf') as mocked:
+    with mock.patch('bids.modeling.transformations.compute.hrf') as mocked:
         # Sampling rate is 10Hz, no oversampling needed
         transform.Convolve(collection, 'rt_dense', output='rt_mock')
         mocked.compute_regressor.assert_called_with(*args, oversampling=1.0, **kwargs)
 
-    with mock.patch('bids.analysis.transformations.compute.hrf') as mocked:
+    with mock.patch('bids.modeling.transformations.compute.hrf') as mocked:
         # Slow sampling rate, oversample (4x) to 2Hz
         collection.sampling_rate = 0.5
         transform.Convolve(collection, 'RT', output='rt_mock')
         mocked.compute_regressor.assert_called_with(*args, oversampling=4.0, **kwargs)
 
-    with mock.patch('bids.analysis.transformations.compute.hrf') as mocked:
+    with mock.patch('bids.modeling.transformations.compute.hrf') as mocked:
         # Dense variable is already sampled at 10Hz, no oversampling needed
         collection.sampling_rate = 0.5
         transform.Convolve(collection, 'rt_dense', output='rt_mock')
         mocked.compute_regressor.assert_called_with(*args, oversampling=1.0, **kwargs)
 
-    with mock.patch('bids.analysis.transformations.compute.hrf') as mocked:
+    with mock.patch('bids.modeling.transformations.compute.hrf') as mocked:
         # Onset requires 10Hz resolution, oversample (2x) to 20Hz
         collection.sampling_rate = 10
         collection['RT'].onset[0] += 0.1
@@ -258,8 +258,8 @@ def test_split(collection):
 
     # Grouping SparseEventVariable by multiple columns
     transform.Split(collection, variables=['RT_2'], by=['respcat', 'loss'])
-    assert 'RT_2.respcat[-1].loss[13]' in collection.variables.keys() and \
-           'RT_2.respcat[1].loss[13]' in collection.variables.keys()
+    assert 'RT_2.loss[13].respcat[-1]' in collection.variables.keys() and \
+           'RT_2.loss[13].respcat[1]' in collection.variables.keys()
 
     # Grouping by DenseEventVariable
     transform.Split(collection, variables='RT_3', by='respcat')

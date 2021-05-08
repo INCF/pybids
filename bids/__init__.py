@@ -5,7 +5,7 @@ from .layout import BIDSLayout, BIDSLayoutIndexer
 from bids_validator import BIDSValidator
 
 __all__ = [
-    "analysis",
+    "modeling",
     "BIDSLayout",
     "BIDSLayoutIndexer",
     "BIDSValidator",

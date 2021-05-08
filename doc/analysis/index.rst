@@ -10,7 +10,7 @@
 
 |
 
-.. currentmodule:: pybids.analysis
+.. currentmodule:: pybids.modeling
 
 .. _overview:
 
@@ -30,10 +30,10 @@ The PyBIDS analysis module provides high-level model specification functionality
 for BIDS datasets. It assumes that model information is represented in line with
 the (upcoming) BIDS-Model specification.
 
-Note that, at present, pybids.analysis does not provide a one-stop model-fitting
+Note that, at present, pybids.modeling does not provide a one-stop model-fitting
 solution. You will need to call some other package (e.g., `nistats`_, or a
 non-Python package like `FSL`_ or `SPM`_ via `Nipype`_) to handle model estimation.
-What pybids.analysis will do for you is automatically handle the loading and
+What pybids.modeling will do for you is automatically handle the loading and
 transformation of all variables, and the construction of design matrices and
 contrasts.
 
@@ -52,9 +52,9 @@ A simple example of standard usage follows. We assume that we have a root folder
 containing a BIDS-compliant project in ``/bidsproject``, as well as a BIDS-Models
 JSON specification in ``model.json``.
 
-    >>> from bids.analysis import Analysis
-    >>> # Initialize the Analysis
-    >>> analysis = Analysis('/bidsproject', 'model1.json')
+    >>> from bids.modeling import BIDSStatsModelsGraph
+    >>> # Initialize the BIDSStatsModelsGraph
+    >>> analysis = BIDSStatsModelsGraph('/bidsproject', 'model1.json')
     >>> # Setup constructs all the design matrices
     >>> analysis.setup()
     >>> # Sample query: retrieve first-level design matrix for one run

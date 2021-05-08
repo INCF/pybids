@@ -12,7 +12,7 @@ import pandas as pd
 
 from bids.utils import listify, convert_JSON
 from bids.variables import SparseRunVariable
-from bids.analysis import transformations as pbt
+from bids.modeling import transformations as pbt
 
 
 class Transformation(metaclass=ABCMeta):
@@ -292,11 +292,18 @@ class Transformation(metaclass=ABCMeta):
             else:
                 # Either assign new name in order, or re-use existing one
                 if self.output is not None:
-                    if len(self.variables) == len(self.output) or not \
+                    n_vars = len(self.variables)
+                    n_output = len(self.output)
+                    if n_vars == n_output or not \
                             self._loopable:
                         _output = self.output[i]
-                    elif len(self.output) == 1:
+                    elif n_output == 1:
                         _output = str(self.output) + '_' + col.name
+                    else:
+                        msg = ("Number of output variable names in provided "
+                               "list ({}) does not match the number of variables"
+                               " produced by the transformation ({}).")
+                        raise ValueError(msg.format(n_output, n_vars))
                 else:
                     _output = col.name
 

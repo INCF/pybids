@@ -28,6 +28,8 @@ class BIDSVariableCollection(object):
     ----------
     variables : list
         A list of BIDSVariables or SimpleVariables.
+    name : str
+        Optional name to assign to the collection.
 
     Notes
     -----
@@ -36,7 +38,9 @@ class BIDSVariableCollection(object):
     run-level Variables, use the BIDSRunVariableCollection.
     """
 
-    def __init__(self, variables):
+    def __init__(self, variables, name=None):
+
+        self.name = name
 
         if not variables:
             raise ValueError("No variables were provided")
@@ -104,7 +108,7 @@ class BIDSVariableCollection(object):
     def to_df(
         self, variables=None, format="wide", fillna=np.nan, entities=True, timing=True
     ):
-        """Merge variables into a single pandas DataFrame.
+        """Merge BIDVariables in the collection into a single pandas DataFrame.
 
         Parameters
         ----------
@@ -213,10 +217,13 @@ class BIDSVariableCollection(object):
         return BIDSVariableCollection(variables)
 
     def clone(self):
-        """Returns a shallow copy of the current instance, except that all
-        variables are deep-cloned.
+        """Returns a copy of the current instance.
         """
+        # We can't simply deepcopy, because variables have non-serializable
+        # attributes. So we shallow copy then explicitly clone collections and
+        # more complex objects.
         clone = copy(self)
+        clone.entities = self.entities.copy()
         clone.variables = {k: v.clone() for (k, v) in self.variables.items()}
         return clone
 
@@ -529,7 +536,7 @@ class BIDSRunVariableCollection(BIDSVariableCollection):
         entities=True,
         timing=True,
     ):
-        """Merge columns into a single pandas DataFrame.
+        """Merge variables into a single pandas DataFrame.
 
         Parameters
         ----------
@@ -613,7 +620,8 @@ class BIDSRunVariableCollection(BIDSVariableCollection):
         )
 
 
-def merge_collections(collections, sampling_rate="highest", output_level=None):
+def merge_collections(collections, sampling_rate="highest", output_level=None,
+                      variables=None):
     """Merge two or more collections at the same level of analysis.
 
     Parameters
@@ -627,14 +635,17 @@ def merge_collections(collections, sampling_rate="highest", output_level=None):
     output_level : str, optional
         Assign a new level (e.g., 'run', 'subject', etc.) to the merged
         collection. If None, the current level is retained.
+    variables : list
+        Optional list of names of variables to keep. If None, all are retained.
 
     Returns
     -------
     BIDSVariableCollection or BIDSRunVariableCollection
         Result type depends on the type of the input collections.
     """
+
     collections = listify(collections)
-    if len(collections) == 1:
+    if len(collections) == 1 and variables is None:
         return collections[0]
 
     levels = set([c.level for c in collections])
@@ -645,20 +656,26 @@ def merge_collections(collections, sampling_rate="highest", output_level=None):
             "passed collections at levels: %s." % levels
         )
 
-    variables = list(chain(*[c.variables.values() for c in collections]))
     cls = collections[0].__class__
 
+    # Flatten all variables from all collections into a single list
+    keep_vars = list(chain(*[c.variables.values() for c in collections]))
+    if variables is not None:
+        keep_vars = [var for var in keep_vars if var.name in variables]
+    variables = keep_vars
+
+    # merge_variables will automatically merge all variables that share name
     variables = cls.merge_variables(variables, sampling_rate=sampling_rate)
 
     if isinstance(collections[0], BIDSRunVariableCollection):
-        # 'auto' was renamed to 'highest' circa 0.10, but check for both
-        if sampling_rate in {"auto", "highest"}:
+        if sampling_rate == 'highest':
             rates = [
                 var.sampling_rate
                 for var in variables
                 if isinstance(var, DenseRunVariable)
             ]
 
+            # TODO: this looks like it takes first, not highest... verify
             sampling_rate = rates[0] if rates else None
 
         return cls(variables, sampling_rate)

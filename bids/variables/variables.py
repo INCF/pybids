@@ -627,16 +627,13 @@ class DenseRunVariable(BIDSVariable):
             sampling_rate=sampling_rate)
 
 
-def merge_variables(variables, name=None, **kwargs):
+def merge_variables(variables, **kwargs):
     """Merge/concatenate a list of variables along the row axis.
 
     Parameters
     ----------
     variables : :obj:`list`
         A list of Variables to merge.
-    name : :obj:`str`
-        Optional name to assign to the output Variable. By default, uses the
-        same name as the input variables.
     kwargs
         Optional keyword arguments to pass onto the class-specific merge() call.
         Possible args:

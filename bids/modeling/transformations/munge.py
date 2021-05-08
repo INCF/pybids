@@ -11,7 +11,7 @@ from collections import OrderedDict as odict
 
 from bids.utils import listify
 from .base import Transformation
-from patsy import dmatrix
+from formulaic import model_matrix
 import re
 from bids.variables import DenseRunVariable, SimpleVariable
 
@@ -315,11 +315,13 @@ class Split(Transformation):
         group_data = pd.concat(by_variables, axis=1, sort=True)
         group_data.columns = listify(by)
 
-        # Use patsy to create splitting design matrix
+        # Use formulaic to create splitting design matrix
         group_data = group_data.astype(str)
         formula = '0+' + ':'.join(listify(by))
-        dm = dmatrix(formula, data=group_data, return_type='dataframe')
+        dm = model_matrix(formula, data=group_data)
         dm.columns = [col.replace(':', '.') for col in dm.columns]
+        # formulaic output naming convention differs from patsy
+        dm.columns = [col.replace('[T.', '[') for col in dm.columns]
 
         return var.split(dm)
 
